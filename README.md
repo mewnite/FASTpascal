@@ -170,9 +170,3 @@ Estos límites son configurables vía variables de entorno del backend
 |---|---|---|
 | `VITE_BACKEND_WS_URL` | `ws://<host-actual>:4000/ws/run` | Override manual si el backend no está en el puerto/host por defecto |
 
-## Qué NO hace FASTPASCAL (a propósito)
-
-No resuelve ejercicios, no genera lógica de negocio, no tiene botones para
-tareas específicas y no "arregla" el código del usuario. Es un runner
-genérico: cualquier proyecto Pascal compatible con FPC debería poder
-compilarse y ejecutarse acá, no sólo el de un laboratorio en particular.
