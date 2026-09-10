@@ -1,0 +1,43 @@
+# FULL containerized setup (backend + frontend also run inside Docker).
+#
+# This mode uses Docker-in-Docker-via-sibling-containers: the backend
+# container spawns sandbox containers on the *host* engine through the
+# mounted docker.sock. Because of that, the bind mount below is intentionally
+# a host path (./backend/tmp), and FASTPASCAL_HOST_TMP_DIR tells the backend
+# what that same directory is called *from the host's point of view*, so the
+# `docker run -v <path>:/workspace` calls it makes resolve correctly.
+#
+# If you'd rather skip this complexity entirely, see README.md "Modo A" -
+# running the backend directly with Node (still using Docker only for the
+# sandbox) has no such caveat.
+services:
+  runner:
+    build: ./runner
+    image: fastpascal-runner
+    entrypoint: ["true"]
+
+  backend:
+    build: ./backend
+    image: fastpascal-backend
+    ports:
+      - '4000:4000'
+    environment:
+      - PORT=4000
+      - FASTPASCAL_RUNNER_IMAGE=fastpascal-runner
+      - FASTPASCAL_TMP_DIR=/app/tmp
+      - FASTPASCAL_HOST_TMP_DIR=${PWD}/backend/tmp
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./backend/tmp:/app/tmp
+    depends_on:
+      - runner
+
+  frontend:
+    build: ./frontend
+    image: fastpascal-frontend
+    ports:
+      - '5173:5173'
+    environment:
+      - FASTPASCAL_BACKEND_URL=http://backend:4000
+    depends_on:
+      - backend

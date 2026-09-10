@@ -1,0 +1,421 @@
+/* FASTPASCAL — visual identity
+   A nod to the classic Turbo Pascal IDE: deep cobalt blue field, a single
+   warm amber accent for the primary action, thin single-pixel rules instead
+   of soft shadows/rounded cards. Everything set in monospace, because this
+   is a tool for writing code, not a marketing page. */
+
+:root {
+  --blue-950: #060d24;
+  --blue-900: #0b1642;
+  --blue-800: #12205c;
+  --blue-700: #1b2f78;
+  --blue-600: #2c4099;
+  --line: #2a3b7a;
+  --text: #dce4ff;
+  --text-dim: #8b98cf;
+  --amber: #f5b642;
+  --amber-dim: #a67c2e;
+  --cyan: #6fe3ff;
+  --red: #ff6b6b;
+  --green: #6bdc9c;
+  --mono: 'JetBrains Mono', 'Fira Code', ui-monospace, Menlo, Consolas, monospace;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--blue-950);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+button, input, textarea {
+  font-family: var(--mono);
+}
+
+.app-shell {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100vh;
+}
+
+/* ---------- Toolbar ---------- */
+
+.toolbar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 16px;
+  background: var(--blue-900);
+  border-bottom: 1px solid var(--line);
+}
+
+.toolbar-left {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  min-width: 0;
+}
+
+.brand {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--amber);
+  font-size: 15px;
+}
+
+.entry-info {
+  color: var(--text-dim);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.entry-info code {
+  color: var(--cyan);
+}
+
+.toolbar-center { color: var(--text-dim); font-size: 12px; }
+
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.run-btn {
+  background: var(--amber);
+  color: #24170a;
+  border: none;
+  font-weight: 700;
+  padding: 8px 18px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.run-btn:hover { background: #ffc95c; }
+.run-btn:disabled { background: var(--amber-dim); cursor: default; color: #4a3a1c; }
+
+.settings-btn {
+  background: transparent;
+  color: var(--text-dim);
+  border: 1px solid var(--line);
+  padding: 7px 12px;
+  cursor: pointer;
+  font-size: 12px;
+}
+.settings-btn:hover { color: var(--text); border-color: var(--blue-600); }
+
+.settings-popover {
+  position: absolute;
+  top: 100%;
+  right: 16px;
+  margin-top: 4px;
+  background: var(--blue-900);
+  border: 1px solid var(--line);
+  padding: 14px;
+  width: 340px;
+  z-index: 20;
+}
+.settings-popover label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+.settings-popover input {
+  background: var(--blue-950);
+  border: 1px solid var(--line);
+  color: var(--text);
+  padding: 6px 8px;
+  font-size: 13px;
+}
+.settings-hint {
+  margin: 10px 0 0;
+  font-size: 11px;
+  color: var(--text-dim);
+}
+.settings-hint code { color: var(--cyan); }
+
+/* ---------- Layout ---------- */
+
+.main-grid {
+  display: grid;
+  grid-template-columns: 210px 1fr;
+  grid-template-rows: 1fr 220px;
+  height: 100%;
+  min-height: 0;
+}
+
+.editor-pane {
+  grid-column: 2;
+  grid-row: 1;
+  min-height: 0;
+  border-left: 1px solid var(--line);
+}
+
+.bottom-pane {
+  grid-column: 2;
+  grid-row: 2;
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+  min-height: 0;
+  display: flex;
+}
+
+/* ---------- File explorer ---------- */
+
+.file-explorer {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  background: var(--blue-900);
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.panel-title {
+  padding: 8px 12px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+  border-bottom: 1px solid var(--line);
+}
+
+.file-list {
+  list-style: none;
+  margin: 0;
+  padding: 4px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 4px;
+  cursor: pointer;
+}
+.file-item.active { background: var(--blue-700); }
+.file-item:hover { background: var(--blue-800); }
+
+.file-name-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: var(--text);
+  padding: 6px 4px;
+  cursor: pointer;
+  text-align: left;
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+}
+
+.file-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.entry-badge {
+  font-size: 9px;
+  color: var(--blue-950);
+  background: var(--cyan);
+  padding: 1px 4px;
+  margin-left: 4px;
+}
+
+.file-actions {
+  display: none;
+  gap: 2px;
+  padding-right: 2px;
+}
+.file-item:hover .file-actions { display: flex; }
+
+.icon-btn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 2px 4px;
+}
+.icon-btn:hover { color: var(--text); }
+.icon-btn.danger:hover { color: var(--red); }
+
+.add-file-btn {
+  margin: 8px;
+  background: none;
+  border: 1px dashed var(--line);
+  color: var(--text-dim);
+  padding: 7px;
+  cursor: pointer;
+  font-size: 12px;
+}
+.add-file-btn:hover { color: var(--text); border-color: var(--blue-600); }
+
+.add-file-row {
+  display: flex;
+  gap: 4px;
+  padding: 8px;
+}
+.add-file-row input {
+  flex: 1;
+  background: var(--blue-950);
+  border: 1px solid var(--line);
+  color: var(--text);
+  padding: 5px 6px;
+  font-size: 12px;
+}
+.add-file-row button {
+  background: var(--blue-700);
+  border: none;
+  color: var(--text);
+  cursor: pointer;
+  padding: 0 10px;
+}
+
+/* ---------- Terminal (interactive run panel) ---------- */
+
+.terminal {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+}
+
+.panel-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stop-btn {
+  background: none;
+  border: 1px solid #5c2b2b;
+  color: var(--red);
+  cursor: pointer;
+  font-size: 11px;
+  padding: 2px 8px;
+}
+.stop-btn:hover { background: #2a1414; }
+
+.terminal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 12px;
+  font-size: 13px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.term-line { display: inline; }
+.term-stdout { color: var(--text); }
+.term-stderr { color: #ffb3b3; }
+.term-input {
+  display: block;
+  color: var(--cyan);
+  margin: 2px 0;
+}
+
+.terminal-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-top: 1px solid var(--line);
+  padding: 8px 12px;
+  background: var(--blue-900);
+}
+.terminal-input-row .prompt { color: var(--amber); font-weight: 700; }
+.terminal-input-row input {
+  flex: 1;
+  background: var(--blue-950);
+  border: 1px solid var(--line);
+  color: var(--text);
+  padding: 6px 8px;
+  font-size: 13px;
+  outline: none;
+}
+.terminal-input-row input:focus { border-color: var(--cyan); }
+.terminal-input-row button {
+  background: var(--blue-700);
+  border: none;
+  color: var(--text);
+  cursor: pointer;
+  padding: 6px 12px;
+  font-size: 12px;
+}
+.terminal-input-row button:hover { background: var(--blue-600); }
+
+.line { margin: 4px 0; }
+.muted { color: var(--text-dim); }
+
+.error-title { color: var(--red); font-weight: 700; }
+
+.raw-output {
+  background: var(--blue-950);
+  border: 1px solid var(--line);
+  padding: 8px 10px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 4px 0;
+}
+
+.diagnostic {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 3px 0;
+}
+.diagnostic.clickable { cursor: pointer; }
+.diagnostic.clickable:hover .diag-msg { text-decoration: underline; }
+
+.badge {
+  font-size: 10px;
+  padding: 1px 5px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+.badge-error, .badge-fatal { background: #5c2323; color: #ffb3b3; }
+.badge-warning { background: #5c4a1a; color: var(--amber); }
+.badge-note, .badge-hint { background: var(--blue-700); color: var(--cyan); }
+
+.diag-loc { color: var(--cyan); flex-shrink: 0; }
+.diag-msg { color: var(--text); }
+
+.warnings-box {
+  margin: 6px 0 10px;
+  border: 1px solid var(--line);
+  padding: 6px 8px;
+}
+.warnings-box summary {
+  cursor: pointer;
+  color: var(--text-dim);
+  font-size: 12px;
+}
+
+.run-status {
+  display: block;
+  margin-top: 12px;
+  padding: 8px 10px;
+  font-size: 12px;
+  border: 1px solid var(--line);
+  white-space: normal;
+}
+.run-status.ok { color: var(--green); border-color: #234c37; }
+.run-status.fail { color: var(--red); border-color: #5c2b2b; }
